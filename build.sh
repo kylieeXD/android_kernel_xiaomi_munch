@@ -78,7 +78,7 @@ function KERNEL_COMPILE() {
 # Kernel Results
 function KERNEL_RESULT() {
 	# Run compiler
-	KERNEL_COMPILE | tee compile.log
+	KERNEL_COMPILE
 
 	# Create anykernel
 	rm -rf anykernel
@@ -95,10 +95,8 @@ function KERNEL_RESULT() {
 	# Upload kernel and log to artifact
 	if [[ -n "${GITHUB_ACTIONS:-}" ]]; then
 		cp "$2" "$3"
-		cp "${KERNEL_PATH}/compile.log" "$3"
 	else
 		echo "Uploading kernel..." && UPLOAD_ARTIFACT "$2"
-		echo "Uploading log..." UPLOAD_ARTIFACT "${KERNEL_PATH}/compile.log"
 	fi
 
 	# Back to kernel root
@@ -107,7 +105,7 @@ function KERNEL_RESULT() {
 
 # Run all function
 rm -rf compile.log
-KERNEL_RESULT "main" "$KERNEL_NAME" "$3"
+KERNEL_RESULT "main" "$KERNEL_NAME" "$3" | tee compile.log
 
 # Done bang
 echo -e "Completed in $((SECONDS / 60)) minute(s) and $((SECONDS % 60)) second(s) !\n"
